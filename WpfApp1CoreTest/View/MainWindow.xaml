@@ -16,18 +16,52 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100" />
+            <RowDefinition Height="80" />
             <RowDefinition />
         </Grid.RowDefinitions>
-
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Border Margin="5" MaxWidth="700" MinWidth="500">
-                <TreeView x:Name="TV"
-                ItemsSource="{Binding GetFolderCollection}"
-                BehaviorTVSelectItem:TreeViewSelectionChangedBehavior.ChangedCommand="{Binding SelectItemChangedCommand}"
+        
+        <ListBox
+                Grid.Row="0"
+                ItemsSource="{Binding GetFolderUpCollection}"
+                SelectedItem="{Binding GetCurentFolder}"
                 >
+
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
+            <ListBox.ItemTemplate>
+                <DataTemplate DataType="{x:Type M:FolderModel}">
+                    <!--<HierarchicalDataTemplate DataType="{x:Type M:FolderModel}">-->
+                        <StackPanel Margin="2" Orientation="Horizontal">
+                            <Border Background="Aqua" BorderThickness="2" CornerRadius="5" BorderBrush="Black">
+                                <TextBlock Text="{Binding FileName}" Margin="5" />
+                                <!--<Button Command="{Binding ReturnGetMain.SelectItemChangedCommand}" CommandParameter="{Binding  }">
+                                <TextBlock Text="{Binding FileName}" Margin="5" />
+                            </Button>-->
+                            </Border>
+                        </StackPanel>
+                    <!--</HierarchicalDataTemplate>-->
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition  Width="2*" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+
+                <Border Margin="5" Grid.Column="0" >
+                    <TreeView x:Name="TV" 
+                    ItemsSource="{Binding GetFolderCollection, Mode=TwoWay}"
+                    BehaviorTVSelectItem:TreeViewSelectionChangedBehavior.ChangedCommand="{Binding SelectItemChangedCommand}">
+                   
                     <TreeView.ItemTemplate>
-                        <HierarchicalDataTemplate DataType="{x:Type M:FolderModel}" ItemsSource="{Binding ChildFolder}">
+                        <HierarchicalDataTemplate DataType="{x:Type M:FolderModel}" ItemsSource="{Binding ChildFolder}" >
                             <StackPanel Orientation="Horizontal" Margin="2">
                                 <Border Background="BlueViolet" BorderThickness="2" CornerRadius="5" BorderBrush="Black">
                                     <TextBlock Text="{Binding FileName}" Margin="5" />
@@ -35,26 +69,23 @@
                             </StackPanel>
                         </HierarchicalDataTemplate>
                     </TreeView.ItemTemplate>
-                </TreeView>
-            </Border>
-            <ListBox ItemsSource="{Binding GetCurentFolder}">
-                <TextBlock Height="Auto" Text="{Binding GetCurentFolder.FileName, StringFormat='Название папки: {0}'}" FontWeight="Bold"/>
-                <!--<DockPanel Width="Auto" >
-                -->
-                <!--<Expander DockPanel.Dock="Bottom" IsEnabled="True">
-                    <StackPanel Orientation="Horizontal" >
-                        <TextBlock Height="25"></TextBlock>
-                        <TextBlock Height="25"></TextBlock>
-                        <TextBlock Height="25"></TextBlock>
-                    </StackPanel>
-                </Expander>-->
-                <!--
-                <Border BorderBrush="LightGreen" BorderThickness="2">
-                    <DataGrid/>
-                </Border>
-            </DockPanel >-->
-            </ListBox>
-        </StackPanel>
 
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                </TreeView>
+                </Border>
+
+            <Border Margin="5" Grid.Column="1">
+                <StackPanel >
+                    <TextBlock Height="Auto" Text="{Binding GetCurentFolder.FileName, StringFormat='Название папки: {0}', UpdateSourceTrigger=PropertyChanged}" FontWeight="Bold"/>
+                    <Image Source="{Binding GetCurentFolder.ReturnImage}" Width="150"/>
+                </StackPanel>
+            </Border>
+
+        </Grid>
     </Grid>
 </Window>

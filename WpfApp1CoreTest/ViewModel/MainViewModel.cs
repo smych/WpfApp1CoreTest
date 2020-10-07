@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Runtime.InteropServices.ComTypes;
 using System.Windows.Input;
 using WpfApp1CoreTest.Model;
 using WpfApp1CoreTest.ViewModel.Base;
@@ -32,10 +34,45 @@ namespace WpfApp1CoreTest.ViewModel
                 if (_curentFolder != value)
                 {
                     _curentFolder = value;
+
                     RaisePropertyChanged(() => GetCurentFolder);
+
+                    // Создаем новый список ListBox
+                    GetFolderUpCollection = ListFolders.ListFolderReturn(_curentFolder);
                 }
             }
         }
+
+        /// <summary>
+        /// Список ListBox
+        /// </summary>
+        //private ObservableCollection<FolderModel> _getFolderUpCollection = null;
+        //public ObservableCollection<FolderModel> GetFolderUpCollection
+        //{
+        //    get => _getFolderUpCollection;
+        //    set
+        //    {
+        //        if (_getFolderUpCollection != value)
+        //        {
+        //            _getFolderUpCollection = value;
+        //            RaisePropertyChanged(() => GetFolderUpCollection);
+        //        }
+        //    }
+        //}
+        private List<FolderModel> _getFolderUpCollection = null;
+        public List<FolderModel> GetFolderUpCollection
+        {
+            get => _getFolderUpCollection;
+            set
+            {
+                if (_getFolderUpCollection != value)
+                {
+                    _getFolderUpCollection = value;
+                    RaisePropertyChanged(() => GetFolderUpCollection);
+                }
+            }
+        }
+
 
         // Необходим для алгоритма создания начало точки поиска
         private FolderModel RootFolder;
@@ -58,27 +95,6 @@ namespace WpfApp1CoreTest.ViewModel
                         if (param != null)
                         {
                             this.GetCurentFolder = param;
-                            //// ###! this.CurrentFolderViewModel = ReturnFolderViewModel(SelectedItemTreeViewItem);
-
-                            //if (this.CurrentFolder != null)
-                            //    this.DirtyFlagChangedEvent -= CurrentDocument_DirtyFlagChangedEvent;
-
-                            //if (param.NameFolder == "Root")
-                            //{
-                            //    this.CurrentDocument = new RootViewModel();
-                            //}
-                            //else
-
-
-                            //this.CurrentFolderViewModel = new FolderViewModel();
-
-                            //// Это отображение имени текущей папки
-                            //this.CurrentFolderViewModel.FolderTitle = param.NameFolder;
-
-                            //// Это коллекция файлов текущей папки
-                            //this.CurrentFolderViewModel.ChildrenFileViewModelsCollection = param.ChildrenFiles;
-                            // this.CancelTreeVieSelection = this.CurrentDocument.IsDirty;
-                            // this.CurrentDocument.DirtyFlagChangedEvent += CurrentDocument_DirtyFlagChangedEvent;
                         }
                     });
                 }
@@ -87,10 +103,36 @@ namespace WpfApp1CoreTest.ViewModel
             }
         }
 
+        //
+        // На одну папку выше
+        private ICommand _upFolderCommand = null;
+        public ICommand UpFolderCommand
+        {
+            get
+            {
+                if (_upFolderCommand == null)
+                {
+                    _upFolderCommand = new RelayCommand<object>((p) =>
+                    {
+                        FolderModel itemFolder = p as FolderModel;
+                        if (itemFolder != null)
+                        {
+                            GetCurentFolder = itemFolder;
+                        }
+                    }
+                    );
+                }
+
+                return _upFolderCommand;
+            }
+        }
+
+
         #endregion
 
         public MainViewModel()
         {
+            FolderModel.GetMainView = this;
             GetFolderCollection = CreateCollection();
         }
 
