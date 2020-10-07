@@ -134,6 +134,7 @@ namespace WpfApp1CoreTest.ViewModel
         {
             FolderModel.GetMainView = this;
             GetFolderCollection = CreateCollection();
+            GetCurentFolder = RootFolder;
         }
 
 
